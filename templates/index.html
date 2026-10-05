@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}Predict Student Score | EduPredict{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-9 col-lg-10">
+        
+        <div class="text-center mb-4">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-medium mb-2">
+                Machine Learning Forecasting Model
+            </span>
+            <h1 class="display-6 fw-bold text-dark mt-1">Student Final Score Predictor</h1>
+            <p class="text-muted lead fs-6 mx-auto" style="max-width: 650px;">
+                Enter the student's reference details and behavioral academic metrics to predict their expected final exam score and receive an in-depth explanatory breakdown.
+            </p>
+        </div>
+
+        <div class="card border-0 shadow-sm bg-light-subtle rounded-4 mb-4 p-3">
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span class="text-muted small fw-semibold">
+                    <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Test Profiles:
+                </span>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-outline-primary" onclick="fillProfile('sarah')">Sarah (High Achiever)</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="fillProfile('john')">John (Average)</button>
+                    <button type="button" class="btn btn-outline-danger" onclick="fillProfile('daniel')">Daniel (Needs Support)</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="card-header bg-white border-bottom p-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar-icon bg-primary text-white rounded-3 p-2">
+                        <i class="bi bi-person-lines-fill fs-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold">Student Assessment Form</h4>
+                        <small class="text-muted">All inputs are used to calculate the predicted score and formulate explanatory insights.</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-4 p-md-5">
+                <form action="{{ url_for('predict') }}" method="POST" id="predictionForm" novalidate>
+                    
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-primary border-bottom pb-2 mb-3">
+                            <i class="bi bi-bookmark-check me-2"></i>1. Student Reference Information
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="student_name" class="form-label fw-semibold">Student Full Name <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                                    <input type="text" class="form-control border-start-0" id="student_name" name="student_name" placeholder="e.g., Alex Johnson" required>
+                                </div>
+                                <div class="form-text">Used on the scorecard & report output.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="student_class" class="form-label fw-semibold">Class / Grade / Section <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-building text-muted"></i></span>
+                                    <input type="text" class="form-control border-start-0" id="student_class" name="student_class" placeholder="e.g., Grade 10 - Section B" required>
+                                </div>
+                                <div class="form-text">Reference cohort for comparative insights.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-primary border-bottom pb-2 mb-3">
+                            <i class="bi bi-sliders me-2"></i>2. Academic & Behavioral Features
+                        </h5>
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label for="gender" class="form-label fw-semibold">Gender</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-gender-ambiguous text-muted"></i></span>
+                                    <select class="form-select border-start-0" id="gender" name="gender" required>
+                                        <option value="Male" selected>Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                                <div class="form-text">Demographic indicator from dataset.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="parental_support" class="form-label fw-semibold">Parental Support Level</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-people text-muted"></i></span>
+                                    <select class="form-select border-start-0" id="parental_support" name="parental_support" required>
+                                        <option value="High">High (Active Involvement & Mentorship)</option>
+                                        <option value="Medium" selected>Medium (Standard Check-ins)</option>
+                                        <option value="Low">Low (Independent / Minimal Guidance)</option>
+                                    </select>
+                                </div>
+                                <div class="form-text">Environmental and home guidance level.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="previous_grade" class="form-label fw-semibold">Previous Grade / Exam Score (0 - 100)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-award text-muted"></i></span>
+                                    <input type="number" class="form-control border-start-0" id="previous_grade" name="previous_grade" min="0" max="100" step="0.5" value="78" required>
+                                    <span class="input-group-text bg-light">%</span>
+                                </div>
+                                <div class="form-text">Primary historical academic baseline.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="attendance_rate" class="form-label fw-semibold">Attendance Rate (0 - 100%)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-calendar-check text-muted"></i></span>
+                                    <input type="number" class="form-control border-start-0" id="attendance_rate" name="attendance_rate" min="0" max="100" step="0.5" value="85" required>
+                                    <span class="input-group-text bg-light">%</span>
+                                </div>
+                                <div class="form-text">Percentage of lectures & classes attended.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="study_hours" class="form-label fw-semibold">Study Hours Per Week (Outside School)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-clock-history text-muted"></i></span>
+                                    <input type="number" class="form-control border-start-0" id="study_hours" name="study_hours" min="0" max="100" step="0.5" value="15" required>
+                                    <span class="input-group-text bg-light">hrs/wk</span>
+                                </div>
+                                <div class="form-text">Dedicated independent revision time.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="extracurricular" class="form-label fw-semibold">Extracurricular Activities Count</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-trophy text-muted"></i></span>
+                                    <input type="number" class="form-control border-start-0" id="extracurricular" name="extracurricular" min="0" max="10" step="1" value="1" required>
+                                    <span class="input-group-text bg-light">Clubs / Sports</span>
+                                </div>
+                                <div class="form-text">Clubs, sports, debates, arts, or music.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 pt-3 border-top">
+                        <button type="reset" class="btn btn-outline-secondary px-4 py-2 w-100 w-sm-auto">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Form
+                        </button>
+                        <button type="submit" class="btn btn-primary bg-gradient-primary px-5 py-2 w-100 w-sm-auto fw-bold shadow-sm">
+                            <i class="bi bi-graph-up-arrow me-2"></i> Predict Final Score & View Reasons
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Prediction Report: {{ student.student_name }} | EduPredict{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-xl-10 col-lg-11">
+        
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary rounded-pill px-3 py-2 btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> New Student Prediction
+            </a>
+            <div class="d-flex gap-2">
+                <button onclick="window.print()" class="btn btn-light border rounded-pill px-3 py-2 btn-sm text-dark">
+                    <i class="bi bi-printer me-1"></i> Print / Save Report
+                </button>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
+            <div class="card-header bg-gradient-primary text-white p-4 p-md-5">
+                <div class="row align-items-center g-4">
+                    
+                    <div class="col-md-7 border-end-md">
+                        <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-semibold mb-2">
+                            Academic Forecast Report
+                        </span>
+                        <h2 class="display-6 fw-bold mb-1">{{ student.student_name }}</h2>
+                        <div class="d-flex flex-wrap gap-3 align-items-center text-white-50 mt-2">
+                            <span><i class="bi bi-building me-1 text-white"></i> <strong>Class:</strong> {{ student.student_class }}</span>
+                            <span><i class="bi bi-gender-ambiguous me-1 text-white"></i> <strong>Gender:</strong> {{ student.gender }}</span>
+                            <span><i class="bi bi-calendar3 me-1 text-white"></i> <strong>Date:</strong> {{ student.assessment_date }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5 text-md-center">
+                        <small class="text-white-50 text-uppercase tracking-wider fw-semibold">Predicted Final Score</small>
+                        <div class="display-3 fw-bold text-white my-1">
+                            {{ result.predicted_score }}<span class="fs-4 text-white-50">/100</span>
+                        </div>
+                        <div class="d-inline-flex align-items-center gap-2">
+                            <span class="badge bg-white text-dark px-3 py-2 rounded-pill fw-bold fs-6 shadow-sm">
+                                Grade: {{ result.letter_grade }}
+                            </span>
+                            <span class="badge bg-light bg-opacity-25 text-white px-3 py-2 rounded-pill fw-medium fs-6 border border-white border-opacity-25">
+                                {{ result.status }}
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="progress" style="height: 10px; border-radius: 0;">
+                <div class="progress-bar bg-success" role="progressbar" 
+                     style="width: {{ result.predicted_score }}%;" 
+                     aria-valuenow="{{ result.predicted_score }}" aria-valuemin="0" aria-valuemax="100">
+                </div>
+            </div>
+
+            <div class="card-body bg-light p-4 border-bottom">
+                <h6 class="fw-bold text-uppercase text-muted small mb-3">Input Factors Overview</h6>
+                <div class="row g-3">
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="bg-white p-3 rounded-3 shadow-sm border text-center">
+                            <div class="text-muted small">Previous Grade</div>
+                            <div class="fs-5 fw-bold text-primary">{{ student.previous_grade }}%</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="bg-white p-3 rounded-3 shadow-sm border text-center">
+                            <div class="text-muted small">Attendance</div>
+                            <div class="fs-5 fw-bold text-primary">{{ student.attendance_rate }}%</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="bg-white p-3 rounded-3 shadow-sm border text-center">
+                            <div class="text-muted small">Study Time</div>
+                            <div class="fs-5 fw-bold text-primary">{{ student.study_hours }} <span class="fs-6 fw-normal">hrs</span></div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="bg-white p-3 rounded-3 shadow-sm border text-center">
+                            <div class="text-muted small">Activities</div>
+                            <div class="fs-5 fw-bold text-primary">{{ student.extracurricular }} <span class="fs-6 fw-normal">clubs</span></div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="bg-white p-3 rounded-3 shadow-sm border text-center">
+                            <div class="text-muted small">Parental Support</div>
+                            <div class="fs-5 fw-bold text-primary">{{ student.parental_support }}</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <div class="bg-white p-3 rounded-3 shadow-sm border text-center">
+                            <div class="text-muted small">Class Cohort</div>
+                            <div class="fs-5 fw-bold text-truncate text-primary" title="{{ student.student_class }}">{{ student.student_class }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white p-4 border-bottom d-flex align-items-center gap-3">
+                <div class="avatar-icon bg-info-subtle text-info rounded-3 p-2">
+                    <i class="bi bi-lightbulb-fill fs-4 text-primary"></i>
+                </div>
+                <div>
+                    <h4 class="mb-0 fw-bold">Output Reasons: Why this score was predicted</h4>
+                    <p class="text-muted small mb-0">Feature attribution and rationale behind the prediction for <strong>{{ student.student_name }}</strong> ({{ student.student_class }}).</p>
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="list-group list-group-flush gap-3">
+                    {% for item in reasons %}
+                        <div class="list-group-item border rounded-3 p-3 bg-white shadow-sm d-flex align-items-start gap-3">
+                            <div class="reason-icon-box rounded-circle p-3 d-flex align-items-center justify-content-center 
+                                {% if item.type == 'positive' %}bg-success-subtle text-success
+                                {% elif item.type == 'negative' %}bg-danger-subtle text-danger
+                                {% else %}bg-primary-subtle text-primary{% endif %}">
+                                <i class="bi {{ item.icon }} fs-4"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-1">
+                                    <h6 class="mb-0 fw-bold text-dark">{{ item.factor }}</h6>
+                                    <span class="badge 
+                                        {% if item.type == 'positive' %}bg-success text-white
+                                        {% elif item.type == 'negative' %}bg-danger text-white
+                                        {% else %}bg-secondary text-white{% endif %} rounded-pill px-3 py-1">
+                                        {{ item.impact }}
+                                    </span>
+                                </div>
+                                <p class="text-muted mb-0 small leading-relaxed">{{ item.detail }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 mb-5 border-start border-4 border-success">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                    <h5 class="fw-bold mb-0 text-dark">Actionable Recommendations for {{ student.student_name }}</h5>
+                </div>
+                <ul class="list-unstyled mb-0">
+                    {% for rec in recommendations %}
+                        <li class="d-flex align-items-start gap-2 mb-2 text-muted small">
+                            <i class="bi bi-arrow-right-short text-success fs-5 mt-n1"></i>
+                            <span>{{ rec }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
