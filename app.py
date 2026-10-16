@@ -3,7 +3,8 @@ import os
 import datetime
 from model_utils import StudentScorePredictor
 
-app = Flask(__name__)
+application = Flask(__name__)
+app=application
 app.secret_key = os.environ.get('SECRET_KEY', 'student-score-predictor-secret-key-2026')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
